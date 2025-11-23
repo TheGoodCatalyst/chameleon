@@ -1,0 +1,57 @@
+{
+    "name": "@chameleon/framework",
+    "version": "1.0.0",
+    "description": "Context-First Generative UI Protocol for AI Agents",
+    "main": "dist/index.js",
+    "module": "dist/index.esm.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc && rollup -c",
+        "dev": "tsc --watch",
+        "test": "jest",
+        "lint": "eslint src/**/*.ts",
+        "validate:deployment": "ajv validate -s specs/deployment-config.schema.json -d",
+        "validate:component": "ajv validate -s specs/component-schema.json -d",
+        "validate:response": "ajv validate -s specs/chameleon-protocol.json -d"
+    },
+    "keywords": [
+        "ai",
+        "agent",
+        "ui",
+        "generative",
+        "mcp",
+        "protocol",
+        "context-first",
+        "dynamic-ui"
+    ],
+    "author": "TheGoodCatalyst",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/chameleon/framework.git"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "@typescript-eslint/eslint-plugin": "^6.0.0",
+        "@typescript-eslint/parser": "^6.0.0",
+        "ajv-cli": "^5.0.0",
+        "eslint": "^8.0.0",
+        "jest": "^29.0.0",
+        "rollup": "^3.0.0",
+        "typescript": "^5.0.0"
+    },
+    "files": [
+        "dist",
+        "specs",
+        "src/styles"
+    ],
+    "exports": {
+        ".": {
+            "import": "./dist/index.esm.js",
+            "require": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./styles": "./src/styles/chameleon.css"
+    }
+}

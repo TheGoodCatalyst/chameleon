@@ -1,0 +1,716 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://chameleon.dev/schemas/components/v1",
+    "title": "Chameleon Component Library Schema",
+    "description": "Standard component definitions for the Chameleon UI framework",
+    "version": "1.0.0",
+    "definitions": {
+        "CardComponent": {
+            "type": "object",
+            "description": "Card component for displaying contained information",
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "subtitle": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "url": {
+                            "type": "string",
+                            "format": "uri"
+                        },
+                        "alt": {
+                            "type": "string"
+                        },
+                        "position": {
+                            "type": "string",
+                            "enum": [
+                                "top",
+                                "left",
+                                "right",
+                                "background"
+                            ]
+                        }
+                    }
+                },
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "label": {
+                                "type": "string"
+                            },
+                            "variant": {
+                                "type": "string",
+                                "enum": [
+                                    "primary",
+                                    "secondary",
+                                    "text"
+                                ]
+                            },
+                            "icon": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "label"
+                        ]
+                    }
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": true
+                }
+            }
+        },
+        "ChartComponent": {
+            "type": "object",
+            "description": "Chart component for data visualization",
+            "properties": {
+                "chart_type": {
+                    "type": "string",
+                    "enum": [
+                        "line",
+                        "bar",
+                        "pie",
+                        "scatter",
+                        "area",
+                        "candlestick",
+                        "heatmap"
+                    ],
+                    "description": "Type of chart to render"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "labels": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "datasets": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "label": {
+                                        "type": "string"
+                                    },
+                                    "data": {
+                                        "type": "array"
+                                    },
+                                    "color": {
+                                        "type": "string"
+                                    },
+                                    "fill": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "required": [
+                                    "data"
+                                ]
+                            }
+                        }
+                    },
+                    "required": [
+                        "datasets"
+                    ]
+                },
+                "options": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string"
+                        },
+                        "subtitle": {
+                            "type": "string"
+                        },
+                        "legend": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "grid": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "animations": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "responsive": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "axis": {
+                            "type": "object",
+                            "properties": {
+                                "x": {
+                                    "type": "object",
+                                    "properties": {
+                                        "label": {
+                                            "type": "string"
+                                        },
+                                        "scale": {
+                                            "type": "string",
+                                            "enum": [
+                                                "linear",
+                                                "logarithmic",
+                                                "time"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "y": {
+                                    "type": "object",
+                                    "properties": {
+                                        "label": {
+                                            "type": "string"
+                                        },
+                                        "scale": {
+                                            "type": "string",
+                                            "enum": [
+                                                "linear",
+                                                "logarithmic"
+                                            ]
+                                        },
+                                        "min": {
+                                            "type": "number"
+                                        },
+                                        "max": {
+                                            "type": "number"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "required": [
+                "chart_type",
+                "data"
+            ]
+        },
+        "TableComponent": {
+            "type": "object",
+            "description": "Table component for tabular data",
+            "properties": {
+                "columns": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "label": {
+                                "type": "string"
+                            },
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "text",
+                                    "number",
+                                    "date",
+                                    "boolean",
+                                    "custom"
+                                ]
+                            },
+                            "sortable": {
+                                "type": "boolean",
+                                "default": true
+                            },
+                            "filterable": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "width": {
+                                "type": "string"
+                            },
+                            "align": {
+                                "type": "string",
+                                "enum": [
+                                    "left",
+                                    "center",
+                                    "right"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "label"
+                        ]
+                    }
+                },
+                "rows": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                    }
+                },
+                "options": {
+                    "type": "object",
+                    "properties": {
+                        "pagination": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "default": 10
+                        },
+                        "selectable": {
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "striped": {
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "hoverable": {
+                            "type": "boolean",
+                            "default": true
+                        }
+                    }
+                }
+            },
+            "required": [
+                "columns",
+                "rows"
+            ]
+        },
+        "FormComponent": {
+            "type": "object",
+            "description": "Dynamic form component",
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "label": {
+                                "type": "string"
+                            },
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "text",
+                                    "email",
+                                    "number",
+                                    "date",
+                                    "select",
+                                    "multiselect",
+                                    "checkbox",
+                                    "radio",
+                                    "textarea",
+                                    "file"
+                                ]
+                            },
+                            "placeholder": {
+                                "type": "string"
+                            },
+                            "required": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "default_value": {},
+                            "options": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {},
+                                        "label": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "value",
+                                        "label"
+                                    ]
+                                }
+                            },
+                            "validation": {
+                                "type": "object",
+                                "properties": {
+                                    "pattern": {
+                                        "type": "string"
+                                    },
+                                    "min": {
+                                        "type": "number"
+                                    },
+                                    "max": {
+                                        "type": "number"
+                                    },
+                                    "min_length": {
+                                        "type": "integer"
+                                    },
+                                    "max_length": {
+                                        "type": "integer"
+                                    },
+                                    "custom_message": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "label",
+                            "type"
+                        ]
+                    }
+                },
+                "submit_label": {
+                    "type": "string",
+                    "default": "Submit"
+                },
+                "cancel_label": {
+                    "type": "string",
+                    "default": "Cancel"
+                }
+            },
+            "required": [
+                "fields"
+            ]
+        },
+        "GaugeComponent": {
+            "type": "object",
+            "description": "Gauge/meter component for single metric visualization",
+            "properties": {
+                "value": {
+                    "type": "number"
+                },
+                "min": {
+                    "type": "number",
+                    "default": 0
+                },
+                "max": {
+                    "type": "number",
+                    "default": 100
+                },
+                "unit": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "thresholds": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "value": {
+                                "type": "number"
+                            },
+                            "color": {
+                                "type": "string"
+                            },
+                            "label": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "display_mode": {
+                    "type": "string",
+                    "enum": [
+                        "arc",
+                        "circle",
+                        "bar",
+                        "number"
+                    ],
+                    "default": "arc"
+                }
+            },
+            "required": [
+                "value"
+            ]
+        },
+        "TimelineComponent": {
+            "type": "object",
+            "description": "Timeline component for chronological events",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "timestamp": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "title": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            },
+                            "icon": {
+                                "type": "string"
+                            },
+                            "color": {
+                                "type": "string"
+                            },
+                            "metadata": {
+                                "type": "object"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "timestamp",
+                            "title"
+                        ]
+                    }
+                },
+                "orientation": {
+                    "type": "string",
+                    "enum": [
+                        "vertical",
+                        "horizontal"
+                    ],
+                    "default": "vertical"
+                }
+            },
+            "required": [
+                "items"
+            ]
+        },
+        "KanbanComponent": {
+            "type": "object",
+            "description": "Kanban board component for task management",
+            "properties": {
+                "columns": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "title": {
+                                "type": "string"
+                            },
+                            "color": {
+                                "type": "string"
+                            },
+                            "limit": {
+                                "type": "integer"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "title"
+                        ]
+                    }
+                },
+                "cards": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "column_id": {
+                                "type": "string"
+                            },
+                            "title": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            },
+                            "tags": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "assignee": {
+                                "type": "string"
+                            },
+                            "priority": {
+                                "type": "string",
+                                "enum": [
+                                    "low",
+                                    "medium",
+                                    "high",
+                                    "critical"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "column_id",
+                            "title"
+                        ]
+                    }
+                },
+                "draggable": {
+                    "type": "boolean",
+                    "default": true
+                }
+            },
+            "required": [
+                "columns",
+                "cards"
+            ]
+        },
+        "ProgressComponent": {
+            "type": "object",
+            "description": "Progress indicator component",
+            "properties": {
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "label": {
+                                "type": "string"
+                            },
+                            "status": {
+                                "type": "string",
+                                "enum": [
+                                    "pending",
+                                    "active",
+                                    "completed",
+                                    "error"
+                                ]
+                            },
+                            "description": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "label",
+                            "status"
+                        ]
+                    }
+                },
+                "orientation": {
+                    "type": "string",
+                    "enum": [
+                        "horizontal",
+                        "vertical"
+                    ],
+                    "default": "horizontal"
+                },
+                "show_progress_bar": {
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "required": [
+                "steps"
+            ]
+        },
+        "AlertComponent": {
+            "type": "object",
+            "description": "Alert/banner component",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "info",
+                        "success",
+                        "warning",
+                        "error"
+                    ],
+                    "default": "info"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "dismissible": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "label": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "required": [
+                "message"
+            ]
+        }
+    },
+    "properties": {
+        "component_registry": {
+            "type": "object",
+            "description": "Map of component names to their schemas",
+            "properties": {
+                "card": {
+                    "$ref": "#/definitions/CardComponent"
+                },
+                "chart": {
+                    "$ref": "#/definitions/ChartComponent"
+                },
+                "table": {
+                    "$ref": "#/definitions/TableComponent"
+                },
+                "form": {
+                    "$ref": "#/definitions/FormComponent"
+                },
+                "gauge": {
+                    "$ref": "#/definitions/GaugeComponent"
+                },
+                "timeline": {
+                    "$ref": "#/definitions/TimelineComponent"
+                },
+                "kanban": {
+                    "$ref": "#/definitions/KanbanComponent"
+                },
+                "progress": {
+                    "$ref": "#/definitions/ProgressComponent"
+                },
+                "alert": {
+                    "$ref": "#/definitions/AlertComponent"
+                }
+            }
+        }
+    }
+}

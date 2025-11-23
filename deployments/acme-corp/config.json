@@ -1,0 +1,99 @@
+{
+    "deployment_id": "acme-corp",
+    "brand": {
+        "name": "Acme Corporation",
+        "logo": {
+            "url": "/assets/acme-logo.svg",
+            "dark_url": "/assets/acme-logo-dark.svg",
+            "width": 180,
+            "height": 48
+        },
+        "theme": {
+            "mode": "dark",
+            "colors": {
+                "primary": "#6366f1",
+                "secondary": "#8b5cf6",
+                "accent": "#ec4899",
+                "surface": "#1e293b",
+                "surface_variant": "#334155",
+                "text_primary": "#f1f5f9",
+                "text_secondary": "#cbd5e1",
+                "success": "#10b981",
+                "warning": "#f59e0b",
+                "error": "#ef4444",
+                "info": "#3b82f6"
+            },
+            "typography": {
+                "heading": "Inter",
+                "body": "Inter",
+                "monospace": "JetBrains Mono"
+            },
+            "spacing": {
+                "base_unit": 8
+            },
+            "border_radius": {
+                "small": "4px",
+                "medium": "8px",
+                "large": "16px"
+            },
+            "shadows": {
+                "small": "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+                "medium": "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                "large": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"
+            }
+        }
+    },
+    "design_principles": {
+        "density": "comfortable",
+        "animations": "smooth",
+        "effects": {
+            "glassmorphism": true,
+            "neumorphism": false,
+            "gradients": true,
+            "blur": true
+        },
+        "layout": {
+            "max_width": "1440px",
+            "sidebar_position": "left"
+        }
+    },
+    "interaction_mechanisms": {
+        "feedback_mode": "immediate",
+        "debounce_ms": 300,
+        "confirmation_style": "inline",
+        "error_display": "toast",
+        "loading_indicators": {
+            "style": "skeleton",
+            "delay_ms": 200
+        },
+        "keyboard_shortcuts": true,
+        "haptic_feedback": false
+    },
+    "features": {
+        "voice_input": false,
+        "search": true,
+        "history": true,
+        "exports": true,
+        "collaboration": false,
+        "analytics": true
+    },
+    "localization": {
+        "default_locale": "en-US",
+        "supported_locales": [
+            "en-US",
+            "es-ES",
+            "fr-FR"
+        ]
+    },
+    "metadata": {
+        "version": "1.0.0",
+        "created_at": "2025-11-24T00:00:00Z",
+        "updated_at": "2025-11-24T00:00:00Z",
+        "owner": "Acme Corp",
+        "tags": [
+            "enterprise",
+            "dark-mode",
+            "premium"
+        ]
+    }
+}

@@ -1,0 +1,456 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://chameleon.dev/schemas/deployment-config/v1",
+    "title": "Chameleon Deployment Configuration",
+    "description": "Per-deployment customization for brand, design principles, and interaction mechanisms",
+    "version": "1.0.0",
+    "type": "object",
+    "properties": {
+        "deployment_id": {
+            "type": "string",
+            "description": "Unique identifier for this deployment",
+            "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "brand": {
+            "type": "object",
+            "description": "Brand identity configuration",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Brand/company name"
+                },
+                "logo": {
+                    "type": "object",
+                    "properties": {
+                        "url": {
+                            "type": "string",
+                            "format": "uri"
+                        },
+                        "dark_url": {
+                            "type": "string",
+                            "format": "uri"
+                        },
+                        "width": {
+                            "type": "integer",
+                            "minimum": 1
+                        },
+                        "height": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    "required": [
+                        "url"
+                    ]
+                },
+                "theme": {
+                    "type": "object",
+                    "description": "Color theme configuration",
+                    "properties": {
+                        "mode": {
+                            "type": "string",
+                            "enum": [
+                                "light",
+                                "dark",
+                                "auto"
+                            ],
+                            "default": "auto"
+                        },
+                        "colors": {
+                            "type": "object",
+                            "properties": {
+                                "primary": {
+                                    "type": "string",
+                                    "pattern": "^#[0-9A-Fa-f]{6}$",
+                                    "description": "Primary brand color (hex)"
+                                },
+                                "secondary": {
+                                    "type": "string",
+                                    "pattern": "^#[0-9A-Fa-f]{6}$",
+                                    "description": "Secondary brand color (hex)"
+                                },
+                                "accent": {
+                                    "type": "string",
+                                    "pattern": "^#[0-9A-Fa-f]{6}$",
+                                    "description": "Accent color for highlights (hex)"
+                                },
+                                "surface": {
+                                    "type": "string",
+                                    "pattern": "^#[0-9A-Fa-f]{6}$",
+                                    "description": "Surface/background color (hex)"
+                                },
+                                "surface_variant": {
+                                    "type": "string",
+                                    "pattern": "^#[0-9A-Fa-f]{6}$"
+                                },
+                                "text_primary": {
+                                    "type": "string",
+                                    "pattern": "^#[0-9A-Fa-f]{6}$"
+                                },
+                                "text_secondary": {
+                                    "type": "string",
+                                    "pattern": "^#[0-9A-Fa-f]{6}$"
+                                },
+                                "success": {
+                                    "type": "string",
+                                    "pattern": "^#[0-9A-Fa-f]{6}$"
+                                },
+                                "warning": {
+                                    "type": "string",
+                                    "pattern": "^#[0-9A-Fa-f]{6}$"
+                                },
+                                "error": {
+                                    "type": "string",
+                                    "pattern": "^#[0-9A-Fa-f]{6}$"
+                                },
+                                "info": {
+                                    "type": "string",
+                                    "pattern": "^#[0-9A-Fa-f]{6}$"
+                                }
+                            },
+                            "required": [
+                                "primary",
+                                "surface"
+                            ]
+                        },
+                        "typography": {
+                            "type": "object",
+                            "properties": {
+                                "heading": {
+                                    "type": "string",
+                                    "description": "Font family for headings",
+                                    "examples": [
+                                        "Inter",
+                                        "Roboto",
+                                        "Outfit",
+                                        "Poppins"
+                                    ]
+                                },
+                                "body": {
+                                    "type": "string",
+                                    "description": "Font family for body text",
+                                    "examples": [
+                                        "Inter",
+                                        "Roboto",
+                                        "Open Sans"
+                                    ]
+                                },
+                                "monospace": {
+                                    "type": "string",
+                                    "description": "Font family for code/monospace",
+                                    "default": "JetBrains Mono"
+                                }
+                            },
+                            "required": [
+                                "heading",
+                                "body"
+                            ]
+                        },
+                        "spacing": {
+                            "type": "object",
+                            "description": "Spacing scale configuration",
+                            "properties": {
+                                "base_unit": {
+                                    "type": "integer",
+                                    "description": "Base spacing unit in pixels",
+                                    "default": 8,
+                                    "minimum": 4,
+                                    "maximum": 16
+                                }
+                            }
+                        },
+                        "border_radius": {
+                            "type": "object",
+                            "properties": {
+                                "small": {
+                                    "type": "string",
+                                    "pattern": "^\\d+px$"
+                                },
+                                "medium": {
+                                    "type": "string",
+                                    "pattern": "^\\d+px$"
+                                },
+                                "large": {
+                                    "type": "string",
+                                    "pattern": "^\\d+px$"
+                                }
+                            }
+                        },
+                        "shadows": {
+                            "type": "object",
+                            "properties": {
+                                "small": {
+                                    "type": "string"
+                                },
+                                "medium": {
+                                    "type": "string"
+                                },
+                                "large": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "required": [
+                        "colors",
+                        "typography"
+                    ]
+                }
+            },
+            "required": [
+                "name",
+                "theme"
+            ]
+        },
+        "design_principles": {
+            "type": "object",
+            "description": "Design system principles and preferences",
+            "properties": {
+                "density": {
+                    "type": "string",
+                    "enum": [
+                        "compact",
+                        "comfortable",
+                        "spacious"
+                    ],
+                    "description": "UI density preference",
+                    "default": "comfortable"
+                },
+                "animations": {
+                    "type": "string",
+                    "enum": [
+                        "none",
+                        "reduced",
+                        "smooth",
+                        "playful"
+                    ],
+                    "description": "Animation style preference",
+                    "default": "smooth"
+                },
+                "effects": {
+                    "type": "object",
+                    "properties": {
+                        "glassmorphism": {
+                            "type": "boolean",
+                            "description": "Enable glass-like transparency effects",
+                            "default": false
+                        },
+                        "neumorphism": {
+                            "type": "boolean",
+                            "description": "Enable soft shadow neumorphic style",
+                            "default": false
+                        },
+                        "gradients": {
+                            "type": "boolean",
+                            "description": "Use gradient backgrounds",
+                            "default": true
+                        },
+                        "blur": {
+                            "type": "boolean",
+                            "description": "Enable backdrop blur effects",
+                            "default": true
+                        }
+                    }
+                },
+                "layout": {
+                    "type": "object",
+                    "properties": {
+                        "max_width": {
+                            "type": "string",
+                            "description": "Maximum content width",
+                            "pattern": "^\\d+(px|rem|vw)$",
+                            "default": "1440px"
+                        },
+                        "sidebar_position": {
+                            "type": "string",
+                            "enum": [
+                                "left",
+                                "right"
+                            ],
+                            "default": "left"
+                        }
+                    }
+                }
+            }
+        },
+        "interaction_mechanisms": {
+            "type": "object",
+            "description": "User interaction behavior configuration",
+            "properties": {
+                "feedback_mode": {
+                    "type": "string",
+                    "enum": [
+                        "immediate",
+                        "debounced",
+                        "on_submit"
+                    ],
+                    "description": "How quickly interactions are sent to agent",
+                    "default": "immediate"
+                },
+                "debounce_ms": {
+                    "type": "integer",
+                    "description": "Debounce delay in milliseconds",
+                    "minimum": 0,
+                    "maximum": 5000,
+                    "default": 300
+                },
+                "confirmation_style": {
+                    "type": "string",
+                    "enum": [
+                        "inline",
+                        "modal",
+                        "toast"
+                    ],
+                    "description": "How to display confirmations",
+                    "default": "inline"
+                },
+                "error_display": {
+                    "type": "string",
+                    "enum": [
+                        "toast",
+                        "inline",
+                        "modal",
+                        "banner"
+                    ],
+                    "description": "How to display errors",
+                    "default": "toast"
+                },
+                "loading_indicators": {
+                    "type": "object",
+                    "properties": {
+                        "style": {
+                            "type": "string",
+                            "enum": [
+                                "spinner",
+                                "skeleton",
+                                "progress",
+                                "pulse"
+                            ],
+                            "default": "skeleton"
+                        },
+                        "delay_ms": {
+                            "type": "integer",
+                            "description": "Delay before showing loader (prevents flashing)",
+                            "default": 200
+                        }
+                    }
+                },
+                "keyboard_shortcuts": {
+                    "type": "boolean",
+                    "description": "Enable keyboard shortcuts",
+                    "default": true
+                },
+                "haptic_feedback": {
+                    "type": "boolean",
+                    "description": "Enable haptic feedback on mobile",
+                    "default": false
+                }
+            }
+        },
+        "component_overrides": {
+            "type": "object",
+            "description": "Custom component implementations",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "module": {
+                        "type": "string",
+                        "description": "ES module path to custom component"
+                    },
+                    "props_mapping": {
+                        "type": "object",
+                        "description": "Map standard props to custom component props",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "module"
+                ]
+            }
+        },
+        "features": {
+            "type": "object",
+            "description": "Feature flags for optional functionality",
+            "properties": {
+                "voice_input": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "search": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "history": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "exports": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "collaboration": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "analytics": {
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        },
+        "localization": {
+            "type": "object",
+            "properties": {
+                "default_locale": {
+                    "type": "string",
+                    "pattern": "^[a-z]{2}(-[A-Z]{2})?$",
+                    "default": "en-US"
+                },
+                "supported_locales": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "pattern": "^[a-z]{2}(-[A-Z]{2})?$"
+                    }
+                },
+                "translations_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "URL to custom translations JSON"
+                }
+            }
+        },
+        "metadata": {
+            "type": "object",
+            "description": "Additional deployment metadata",
+            "properties": {
+                "version": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "owner": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    },
+    "required": [
+        "deployment_id",
+        "brand"
+    ]
+}

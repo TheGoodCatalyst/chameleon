@@ -1,0 +1,307 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://chameleon.dev/schemas/protocol/v1",
+  "title": "Chameleon Protocol Specification",
+  "description": "Extension to MCP (Model Context Protocol) adding View primitives for generative UI",
+  "version": "1.0.0",
+  
+  "definitions": {
+    "ViewContent": {
+      "type": "object",
+      "description": "A view component to be rendered in the UI",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "component",
+          "description": "Content type identifier"
+        },
+        "component_name": {
+          "type": "string",
+          "description": "Name of the component to render (e.g., 'card', 'chart', 'form')",
+          "examples": ["card", "chart", "table", "form", "gauge", "kanban"]
+        },
+        "data": {
+          "type": "object",
+          "description": "Component-specific data payload",
+          "additionalProperties": true
+        },
+        "interactive": {
+          "type": "boolean",
+          "description": "Whether the component accepts user interaction",
+          "default": false
+        },
+        "stream_id": {
+          "type": "string",
+          "description": "Optional stream identifier for continuous updates",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "layer": {
+          "type": "string",
+          "enum": ["peripheral", "focus", "interrupt"],
+          "description": "UI layer for this component",
+          "default": "focus"
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional metadata for rendering hints",
+          "properties": {
+            "priority": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100,
+              "description": "Rendering priority (0=lowest, 100=highest)"
+            },
+            "transient": {
+              "type": "boolean",
+              "description": "Whether component should auto-dismiss",
+              "default": false
+            },
+            "ttl": {
+              "type": "integer",
+              "description": "Time-to-live in milliseconds for transient components",
+              "minimum": 0
+            }
+          }
+        }
+      },
+      "required": ["type", "component_name", "data"]
+    },
+    
+    "TextContent": {
+      "type": "object",
+      "description": "Traditional text content",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "text"
+        },
+        "text": {
+          "type": "string",
+          "description": "Text content to display"
+        }
+      },
+      "required": ["type", "text"]
+    },
+    
+    "MCPViewResponse": {
+      "type": "object",
+      "description": "MCP response with View support",
+      "properties": {
+        "content": {
+          "type": "array",
+          "description": "Mixed content array of text and view components",
+          "items": {
+            "oneOf": [
+              { "$ref": "#/definitions/TextContent" },
+              { "$ref": "#/definitions/ViewContent" }
+            ]
+          }
+        },
+        "stream_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Optional WebSocket/SSE URL for continuous updates"
+        }
+      },
+      "required": ["content"]
+    },
+    
+    "StateDelta": {
+      "type": "object",
+      "description": "A state change event for real-time UI updates",
+      "properties": {
+        "target_id": {
+          "type": "string",
+          "description": "Component ID to update"
+        },
+        "operation": {
+          "type": "string",
+          "enum": ["create", "update", "delete", "append", "patch", "replace"],
+          "description": "Type of state change operation"
+        },
+        "payload": {
+          "description": "Operation-specific data",
+          "oneOf": [
+            { "type": "object" },
+            { "type": "array" },
+            { "type": "string" },
+            { "type": "number" },
+            { "type": "boolean" }
+          ]
+        },
+        "path": {
+          "type": "string",
+          "description": "JSON Pointer path for patch operations (RFC 6901)",
+          "pattern": "^(/[^/]*)*$"
+        },
+        "timestamp": {
+          "type": "number",
+          "description": "Unix timestamp in milliseconds"
+        }
+      },
+      "required": ["target_id", "operation", "payload", "timestamp"]
+    },
+    
+    "InteractionEvent": {
+      "type": "object",
+      "description": "User interaction event sent back to agent",
+      "properties": {
+        "component_id": {
+          "type": "string",
+          "description": "ID of the component that received interaction"
+        },
+        "event_type": {
+          "type": "string",
+          "enum": ["click", "submit", "change", "select", "drag", "custom"],
+          "description": "Type of interaction"
+        },
+        "payload": {
+          "type": "object",
+          "description": "Interaction-specific data",
+          "additionalProperties": true
+        },
+        "timestamp": {
+          "type": "number",
+          "description": "Unix timestamp in milliseconds"
+        }
+      },
+      "required": ["component_id", "event_type", "payload", "timestamp"]
+    },
+    
+    "StateStreamEvent": {
+      "type": "object",
+      "description": "Event in the continuous state stream",
+      "properties": {
+        "event": {
+          "type": "string",
+          "enum": ["status", "ui_delta", "interaction", "blocker", "log"],
+          "description": "Event type"
+        },
+        "data": {
+          "description": "Event-specific data",
+          "oneOf": [
+            { "$ref": "#/definitions/StatusEvent" },
+            { "$ref": "#/definitions/UIDeltaEvent" },
+            { "$ref": "#/definitions/InteractionEvent" },
+            { "$ref": "#/definitions/BlockerEvent" },
+            { "$ref": "#/definitions/LogEvent" }
+          ]
+        }
+      },
+      "required": ["event", "data"]
+    },
+    
+    "StatusEvent": {
+      "type": "object",
+      "description": "Agent status update (peripheral layer)",
+      "properties": {
+        "phase": {
+          "type": "string",
+          "description": "Current agent phase",
+          "examples": ["researching", "processing", "analyzing", "idle"]
+        },
+        "progress": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Progress percentage"
+        },
+        "message": {
+          "type": "string",
+          "description": "Human-readable status message"
+        }
+      },
+      "required": ["phase"]
+    },
+    
+    "UIDeltaEvent": {
+      "type": "object",
+      "description": "UI update event (focus layer)",
+      "properties": {
+        "layer": {
+          "type": "string",
+          "enum": ["peripheral", "focus", "interrupt"]
+        },
+        "component": {
+          "$ref": "#/definitions/ViewContent"
+        },
+        "delta": {
+          "$ref": "#/definitions/StateDelta"
+        }
+      },
+      "oneOf": [
+        { "required": ["layer", "component"] },
+        { "required": ["delta"] }
+      ]
+    },
+    
+    "BlockerEvent": {
+      "type": "object",
+      "description": "Blocker requiring user action (interrupt layer)",
+      "properties": {
+        "requires": {
+          "type": "string",
+          "description": "What the agent needs",
+          "examples": ["user_auth", "clarification", "approval", "input"]
+        },
+        "message": {
+          "type": "string",
+          "description": "User-facing blocker description"
+        },
+        "component": {
+          "$ref": "#/definitions/ViewContent",
+          "description": "Optional UI component for handling blocker"
+        },
+        "actions": {
+          "type": "array",
+          "description": "Available user actions",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "label": { "type": "string" },
+              "type": { 
+                "type": "string",
+                "enum": ["primary", "secondary", "danger", "cancel"]
+              }
+            },
+            "required": ["id", "label"]
+          }
+        }
+      },
+      "required": ["requires", "message"]
+    },
+    
+    "LogEvent": {
+      "type": "object",
+      "description": "Debug/info log event",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["debug", "info", "warn", "error"]
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": ["level", "message"]
+    }
+  },
+  
+  "properties": {
+    "protocol_version": {
+      "type": "string",
+      "const": "chameleon/1.0",
+      "description": "Protocol version identifier"
+    },
+    "mcp_compatibility": {
+      "type": "string",
+      "description": "Compatible MCP version",
+      "pattern": "^\\d+\\.\\d+(\\.\\d+)?$"
+    }
+  }
+}

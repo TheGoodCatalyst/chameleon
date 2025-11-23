@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chameleon - Weather Dashboard Example</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Chameleon Styles -->
+  <link rel="stylesheet" href="../../src/styles/chameleon.css">
+  
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    #app {
+      min-height: 100vh;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: white;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin: 0 0 1rem 0;
+      font-weight: 700;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      opacity: 0.9;
+      margin: 0 0 2rem 0;
+    }
+
+    .demo-controls {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .demo-button {
+      padding: 1rem 2rem;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .demo-button:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="hero">
+      <h1>🦎 Chameleon Framework</h1>
+      <p>Context-First Generative UI for AI Agents</p>
+      
+      <div class="demo-controls">
+        <button class="demo-button" onclick="demoWeather()">☀️ Weather Dashboard</button>
+        <button class="demo-button" onclick="demoChart()">📊 Data Analysis</button>
+        <button class="demo-button" onclick="demoForm()">📝 Create Task</button>
+      </div>
+    </div>
+
+    <!-- Chameleon will render here -->
+    <div id="chameleon-container"></div>
+  </div>
+
+  <!-- Load Chameleon (in a real app, this would be bundled) -->
+  <script type="module">
+    import { ChameleonRenderer } from '../../src/client/renderer.ts';
+
+    // Deployment config
+    const deploymentConfig = {
+      deployment_id: 'weather-demo',
+      brand: {
+        name: 'Weather Dashboard',
+        theme: {
+          mode: 'dark',
+          colors: {
+            primary: '#6366f1',
+            secondary: '#8b5cf6',
+            accent: '#ec4899',
+            surface: '#1e293b',
+            surface_variant: '#334155',
+            text_primary: '#f1f5f9',
+            text_secondary: '#cbd5e1',
+          },
+          typography: {
+            heading: 'Inter',
+            body: 'Inter',
+            monospace: 'JetBrains Mono',
+          },
+        },
+      },
+      design_principles: {
+        density: 'comfortable',
+        animations: 'smooth',
+        effects: {
+          glassmorphism: true,
+          blur: true,
+        },
+      },
+    };
+
+    // Initialize renderer
+    const renderer = new ChameleonRenderer({
+      container: '#chameleon-container',
+      mcpServerUrl: 'ws://localhost:3000',
+      deploymentConfig: deploymentConfig,
+      transport: 'websocket',
+    });
+
+    // Demo functions (simulate MCP responses)
+    window.demoWeather = async () => {
+      const mockResponse = {
+        content: [
+          {
+            type: 'component',
+            component_name: 'card',
+            data: {
+              title: 'San Francisco',
+              subtitle: 'Current Weather',
+              content: 'Sunny with a light breeze. Perfect day to explore!',
+              image: {
+                url: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400',
+                position: 'top',
+              },
+              actions: [
+                { id: 'refresh', label: 'Refresh', variant: 'primary' },
+                { id: 'details', label: 'More Details', variant: 'text' },
+              ],
+            },
+            layer: 'focus',
+          },
+          {
+            type: 'component',
+            component_name: 'chart',
+            data: {
+              chart_type: 'line',
+              data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [
+                  {
+                    label: 'Temperature (°C)',
+                    data: [18, 21, 19, 22, 24, 23, 20],
+                    color: '#6366f1',
+                    fill: true,
+                  },
+                ],
+              },
+              options: {
+                title: '7-Day Forecast',
+                subtitle: 'Temperature trends for the week',
+                legend: true,
+                grid: true,
+              },
+            },
+            layer: 'focus',
+          },
+        ],
+      };
+
+      simulateResponse(mockResponse);
+    };
+
+    window.demoChart = async () => {
+      const mockResponse = {
+        content: [
+          {
+            type: 'component',
+            component_name: 'chart',
+            data: {
+              chart_type: 'bar',
+              data: {
+                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                datasets: [
+                  {
+                    label: 'Revenue',
+                    data: [45, 52, 48, 61],
+                    color: '#10b981',
+                  },
+                  {
+                    label: 'Expenses',
+                    data: [32, 38, 35, 42],
+                    color: '#ef4444',
+                  },
+                ],
+              },
+              options: {
+                title: 'Quarterly Performance',
+                subtitle: 'Revenue vs Expenses (in thousands)',
+                legend: true,
+              },
+            },
+            layer: 'focus',
+          },
+        ],
+      };
+
+      simulateResponse(mockResponse);
+    };
+
+    window.demoForm = async () => {
+      const mockResponse = {
+        content: [
+          {
+            type: 'component',
+            component_name: 'form',
+            data: {
+              title: 'Create New Task',
+              description: 'Fill out the details below to create a new task',
+              fields: [
+                {
+                  id: 'title',
+                  label: 'Task Title',
+                  type: 'text',
+                  placeholder: 'Enter task title',
+                  required: true,
+                },
+                {
+                  id: 'description',
+                  label: 'Description',
+                  type: 'textarea',
+                  placeholder: 'Describe the task...',
+                },
+                {
+                  id: 'priority',
+                  label: 'Priority',
+                  type: 'select',
+                  required: true,
+                  options: [
+                    { value: 'low', label: 'Low' },
+                    { value: 'medium', label: 'Medium' },
+                    { value: 'high', label: 'High' },
+                  ],
+                },
+                {
+                  id: 'due_date',
+                  label: 'Due Date',
+                  type: 'date',
+                  required: true,
+                },
+              ],
+              submit_label: 'Create Task',
+              cancel_label: 'Cancel',
+            },
+            layer: 'focus',
+          },
+        ],
+      };
+
+      simulateResponse(mockResponse);
+    };
+
+    function simulateResponse(response) {
+      const hud = renderer['hud'];
+      if (hud) {
+        hud.clear();
+        response.content.forEach((component) => {
+          hud.handleEvent({
+            event: 'ui_delta',
+            data: { component },
+          });
+        });
+      }
+    }
+
+    // Start renderer
+    renderer.start().catch(console.error);
+  </script>
+</body>
+</html>
