@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chameleon - RAG Knowledge Base</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Chameleon Styles -->
+    <link rel="stylesheet" href="../../src/styles/chameleon.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        #app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 3rem 1.5rem 2rem;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin: 0 0 0.5rem 0;
+            font-weight: 700;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            margin: 0 0 2.5rem 0;
+            text-shadow: 0 1px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-container {
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            padding: 0 1rem;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 1rem;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus-within {
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 1.1rem;
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
+            outline: none;
+            padding: 0.5rem;
+        }
+
+        .search-input::placeholder {
+            color: #64748b;
+            opacity: 0.7;
+        }
+
+        .search-button {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .search-button:active {
+            transform: translateY(0);
+        }
+
+        .demo-queries {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 0 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .query-chip {
+            padding: 0.6rem 1.2rem;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            color: #1e293b;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .query-chip:hover {
+            background: rgba(255, 255, 255, 0.75);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .content-wrapper {
+            flex: 1;
+            padding: 0 1.5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        #chameleon-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            color: #1e293b;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            #chameleon-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="hero">
+            <h1>🧠 Knowledge Base RAG</h1>
+            <p>Retrieval Augmented Generation with Chameleon</p>
+
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search the knowledge base..."
+                        onkeypress="handleKeyPress(event)">
+                    <button class="search-button" onclick="performSearch()">
+                        🔍 Search
+                    </button>
+                </div>
+            </div>
+
+            <div class="demo-queries">
+                <span class="info-badge">💡 Try these:</span>
+                <button class="query-chip" onclick="demoQuery('machine learning')">
+                    Machine Learning
+                </button>
+                <button class="query-chip" onclick="demoQuery('web development')">
+                    Web Development
+                </button>
+                <button class="query-chip" onclick="demoQuery('database design')">
+                    Database Design
+                </button>
+                <button class="query-chip" onclick="demoQuery('recent updates')">
+                    Recent Updates
+                </button>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div id="chameleon-container"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { ChameleonRenderer } from '../../src/client/renderer.ts';
+
+        // Deployment config with glassmorphism enabled
+        const deploymentConfig = {
+            deployment_id: 'rag-knowledge-base',
+            brand: {
+                name: 'RAG Knowledge Base',
+                theme: {
+                    mode: 'light',
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        accent: '#ec4899',
+                        surface: '#ffffff',
+                        surface_variant: '#f8fafc',
+                        text_primary: '#0f172a',
+                        text_secondary: '#64748b',
+                    },
+                    typography: {
+                        heading: 'Inter',
+                        body: 'Inter',
+                        monospace: 'JetBrains Mono',
+                    },
+                },
+            },
+            design_principles: {
+                density: 'comfortable',
+                animations: 'smooth',
+                effects: {
+                    glassmorphism: true,
+                    blur: true,
+                },
+            },
+        };
+
+        // Initialize renderer
+        const renderer = new ChameleonRenderer({
+            container: '#chameleon-container',
+            mcpServerUrl: 'ws://localhost:3000',
+            deploymentConfig: deploymentConfig,
+            transport: 'websocket',
+        });
+
+        // Sample document database
+        const documents = [
+            {
+                id: '1',
+                title: 'Introduction to Machine Learning',
+                excerpt: 'Machine learning is a subset of artificial intelligence that enables systems to learn and improve from experience without being explicitly programmed.',
+                category: 'AI & ML',
+                relevance: 0.95,
+                timestamp: '2024-11-20',
+                tags: ['machine learning', 'AI', 'data science'],
+            },
+            {
+                id: '2',
+                title: 'Deep Learning Fundamentals',
+                excerpt: 'Deep learning uses neural networks with multiple layers to progressively extract higher-level features from raw input data.',
+                category: 'AI & ML',
+                relevance: 0.88,
+                timestamp: '2024-11-18',
+                tags: ['deep learning', 'neural networks', 'machine learning'],
+            },
+            {
+                id: '3',
+                title: 'Web Development Best Practices',
+                excerpt: 'Modern web development emphasizes responsive design, accessibility, performance optimization, and maintainable code architecture.',
+                category: 'Web Dev',
+                relevance: 0.92,
+                timestamp: '2024-11-22',
+                tags: ['web development', 'best practices', 'frontend'],
+            },
+            {
+                id: '4',
+                title: 'React Component Patterns',
+                excerpt: 'Learn about common React patterns including compound components, render props, hooks, and context API for building scalable applications.',
+                category: 'Web Dev',
+                relevance: 0.85,
+                timestamp: '2024-11-15',
+                tags: ['react', 'javascript', 'web development', 'frontend'],
+            },
+            {
+                id: '5',
+                title: 'Database Normalization',
+                excerpt: 'Database normalization is the process of organizing data to minimize redundancy and improve data integrity through normal forms.',
+                category: 'Databases',
+                relevance: 0.90,
+                timestamp: '2024-11-19',
+                tags: ['database', 'SQL', 'data modeling'],
+            },
+            {
+                id: '6',
+                title: 'NoSQL vs SQL Databases',
+                excerpt: 'Compare relational SQL databases with NoSQL alternatives like MongoDB, learning when to use each based on your data structure and scalability needs.',
+                category: 'Databases',
+                relevance: 0.87,
+                timestamp: '2024-11-21',
+                tags: ['database', 'NoSQL', 'SQL', 'database design'],
+            },
+            {
+                id: '7',
+                title: 'Recent Update: API Security',
+                excerpt: 'New guidelines on implementing OAuth 2.0, JWT tokens, and rate limiting to secure your REST APIs against common vulnerabilities.',
+                category: 'Security',
+                relevance: 0.93,
+                timestamp: '2024-11-23',
+                tags: ['security', 'API', 'authentication', 'recent'],
+            },
+            {
+                id: '8',
+                title: 'Microservices Architecture',
+                excerpt: 'Microservices architecture decomposes applications into small, independent services that communicate through well-defined APIs.',
+                category: 'Architecture',
+                relevance: 0.84,
+                timestamp: '2024-11-17',
+                tags: ['architecture', 'microservices', 'distributed systems'],
+            },
+        ];
+
+        // Simple search function
+        function searchDocuments(query) {
+            const lowerQuery = query.toLowerCase();
+            const terms = lowerQuery.split(' ').filter(t => t.length > 2);
+
+            return documents
+                .map(doc => {
+                    let score = 0;
+                    const content = `${doc.title} ${doc.excerpt} ${doc.tags.join(' ')}`.toLowerCase();
+
+                    // Calculate relevance score
+                    terms.forEach(term => {
+                        if (doc.title.toLowerCase().includes(term)) score += 3;
+                        if (doc.excerpt.toLowerCase().includes(term)) score += 2;
+                        if (doc.tags.some(tag => tag.includes(term))) score += 1;
+                    });
+
+                    // Boost recent documents if query mentions "recent"
+                    if (lowerQuery.includes('recent') && doc.tags.includes('recent')) {
+                        score += 5;
+                    }
+
+                    return { ...doc, searchScore: score };
+                })
+                .filter(doc => doc.searchScore > 0)
+                .sort((a, b) => b.searchScore - a.searchScore)
+                .slice(0, 6);
+        }
+
+        // Convert documents to Chameleon cards
+        function documentsToCards(docs, query) {
+            return docs.map(doc => ({
+                type: 'component',
+                component_name: 'card',
+                data: {
+                    title: doc.title,
+                    subtitle: `${doc.category} • ${doc.timestamp} • Relevance: ${(doc.relevance * 100).toFixed(0)}%`,
+                    content: doc.excerpt,
+                    actions: [
+                        { id: `view-${doc.id}`, label: '📖 View Full', variant: 'primary' },
+                        { id: `related-${doc.id}`, label: '🔗 Related', variant: 'text' },
+                    ],
+                },
+                layer: 'focus',
+            }));
+        }
+
+        // Perform search
+        window.performSearch = () => {
+            const input = document.getElementById('searchInput');
+            const query = input.value.trim();
+
+            if (!query) {
+                alert('Please enter a search query');
+                return;
+            }
+
+            const results = searchDocuments(query);
+
+            if (results.length === 0) {
+                showNoResults(query);
+                return;
+            }
+
+            const cards = documentsToCards(results, query);
+            displayResults({ content: cards }, query, results.length);
+        };
+
+        // Demo query
+        window.demoQuery = (query) => {
+            document.getElementById('searchInput').value = query;
+            performSearch();
+        };
+
+        // Handle enter key
+        window.handleKeyPress = (event) => {
+            if (event.key === 'Enter') {
+                performSearch();
+            }
+        };
+
+        // Display results
+        function displayResults(response, query, count) {
+            const hud = renderer['hud'];
+            if (hud) {
+                hud.clear();
+
+                // Add status message
+                const statusCard = {
+                    type: 'component',
+                    component_name: 'card',
+                    data: {
+                        title: `Search Results for "${query}"`,
+                        subtitle: `Found ${count} relevant document${count !== 1 ? 's' : ''}`,
+                        content: `Based on keyword matching and relevance scoring`,
+                    },
+                    layer: 'focus',
+                };
+
+                hud.handleEvent({
+                    event: 'ui_delta',
+                    data: { component: statusCard },
+                });
+
+                // Add document cards
+                response.content.forEach((component) => {
+                    hud.handleEvent({
+                        event: 'ui_delta',
+                        data: { component },
+                    });
+                });
+            }
+        }
+
+        // Show no results
+        function showNoResults(query) {
+            const hud = renderer['hud'];
+            if (hud) {
+                hud.clear();
+
+                const noResultsCard = {
+                    type: 'component',
+                    component_name: 'card',
+                    data: {
+                        title: '😕 No Results Found',
+                        subtitle: `No documents match "${query}"`,
+                        content: 'Try different keywords or browse the suggested queries above.',
+                    },
+                    layer: 'focus',
+                };
+
+                hud.handleEvent({
+                    event: 'ui_delta',
+                    data: { component: noResultsCard },
+                });
+            }
+        }
+
+        // Start renderer
+        renderer.start().catch(console.error);
+
+        // Show welcome message
+        setTimeout(() => {
+            const hud = renderer['hud'];
+            if (hud) {
+                const welcomeCard = {
+                    type: 'component',
+                    component_name: 'card',
+                    data: {
+                        title: '👋 Welcome to RAG Knowledge Base',
+                        subtitle: 'Powered by Chameleon Framework',
+                        content: 'Search our knowledge base using natural language queries. Try searching for topics like "machine learning", "web development", or "database design". Click the suggested queries above to get started!',
+                        actions: [
+                            { id: 'get-started', label: '🚀 Get Started', variant: 'primary' },
+                        ],
+                    },
+                    layer: 'focus',
+                };
+
+                hud.handleEvent({
+                    event: 'ui_delta',
+                    data: { component: welcomeCard },
+                });
+            }
+        }, 500);
+    </script>
+</body>
+
+</html>

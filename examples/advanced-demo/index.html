@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Agentic Interactions Demo</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            min-height: 100vh;
+            color: #f1f5f9;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 3rem 1rem 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .demo-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .demo-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: #818cf8;
+        }
+
+        .demo-viz {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            height: 300px;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .controls {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn.active {
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            border-color: transparent;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hero">
+        <h1>Advanced Agentic Interactions</h1>
+        <p>Phase 3: MorphField, GravityWell, and EnergyRiver</p>
+    </div>
+
+    <div class="container">
+        <div class="grid">
+
+            <!-- MorphField -->
+            <div class="demo-card">
+                <h3>MorphField</h3>
+                <p>Contextual shape morphing container</p>
+                <div class="demo-viz" id="morph-field">
+                    <svg width="100%" height="100%" viewBox="0 0 350 300">
+                        <path id="morph-path" fill="#818cf8" opacity="0.8" />
+                    </svg>
+                </div>
+                <div class="controls">
+                    <button class="btn active" onclick="morphTo('circle')">Circle</button>
+                    <button class="btn" onclick="morphTo('square')">Square</button>
+                    <button class="btn" onclick="morphTo('triangle')">Triangle</button>
+                    <button class="btn" onclick="morphTo('star')">Star</button>
+                </div>
+            </div>
+
+            <!-- GravityWell -->
+            <div class="demo-card">
+                <h3>GravityWell</h3>
+                <p>Physics-based decision visualization</p>
+                <div class="demo-viz" id="gravity-well"></div>
+                <div class="controls">
+                    <button class="btn" onclick="addOption()">Add Option</button>
+                    <button class="btn" onclick="resetGravity()">Reset</button>
+                </div>
+            </div>
+
+            <!-- EnergyRiver -->
+            <div class="demo-card">
+                <h3>EnergyRiver</h3>
+                <p>Processing flow visualization</p>
+                <div class="demo-viz" id="energy-river"></div>
+                <div class="controls">
+                    <button class="btn" onclick="setFlow('low')">Low Flow</button>
+                    <button class="btn active" onclick="setFlow('medium')">Medium Flow</button>
+                    <button class="btn" onclick="setFlow('high')">High Flow</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
+
+    <script>
+        // --- MorphField Implementation ---
+        const shapes = {
+            circle: (cx, cy, s) => { const r = s / 2; return `M ${cx - r},${cy} a ${r},${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 ${-r * 2},0`; },
+            square: (cx, cy, s) => { const h = s / 2; return `M ${cx - h},${cy - h} L ${cx + h},${cy - h} L ${cx + h},${cy + h} L ${cx - h},${cy + h} Z`; },
+            triangle: (cx, cy, s) => { const h = (s * Math.sqrt(3)) / 2; return `M ${cx},${cy - h / 2} L ${cx + s / 2},${cy + h / 2} L ${cx - s / 2},${cy + h / 2} Z`; },
+            star: (cx, cy, s) => {
+                const o = s / 2, i = o * 0.4; let p = '';
+                for (let k = 0; k < 10; k++) { const r = k % 2 === 0 ? o : i, a = (Math.PI / 5) * k - Math.PI / 2; p += (k === 0 ? 'M' : ' L') + ` ${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`; }
+                return p + ' Z';
+            }
+        };
+
+        const morphPath = document.getElementById('morph-path');
+        morphPath.setAttribute('d', shapes.circle(175, 150, 100));
+
+        window.morphTo = (shape) => {
+            anime({
+                targets: morphPath,
+                d: [{ value: shapes[shape](175, 150, 100) }],
+                duration: 1000,
+                easing: 'easeInOutQuad'
+            });
+
+            // Update buttons
+            const buttons = document.querySelectorAll('#morph-field + .controls .btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        };
+
+        // --- GravityWell Implementation ---
+        let gravityWell = null;
+
+        function initGravityWell() {
+            const container = document.getElementById('gravity-well');
+            container.innerHTML = '';
+            const svg = createSVG(container, 350, 300);
+
+            // Center node
+            const center = createCircle(svg, 175, 150, 30, '#818cf8');
+            center.setAttribute('filter', 'drop-shadow(0 0 10px #818cf8)');
+
+            // Options
+            const options = [];
+
+            // Physics loop
+            function update() {
+                options.forEach(opt => {
+                    const dx = 175 - opt.x;
+                    const dy = 150 - opt.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist > 35) {
+                        const force = 200 / (dist * dist);
+                        opt.vx += (dx / dist) * force;
+                        opt.vy += (dy / dist) * force;
+                    }
+
+                    opt.x += opt.vx;
+                    opt.y += opt.vy;
+
+                    opt.el.setAttribute('cx', opt.x);
+                    opt.el.setAttribute('cy', opt.y);
+                });
+                requestAnimationFrame(update);
+            }
+            update();
+
+            gravityWell = { svg, options };
+            addOption(); addOption(); addOption();
+        }
+
+        window.addOption = () => {
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 120;
+            const x = 175 + Math.cos(angle) * dist;
+            const y = 150 + Math.sin(angle) * dist;
+
+            const el = createCircle(gravityWell.svg, x, y, 10, '#38bdf8');
+
+            gravityWell.options.push({
+                el, x, y,
+                vx: -Math.sin(angle) * 0.8,
+                vy: Math.cos(angle) * 0.8
+            });
+        };
+
+        window.resetGravity = () => initGravityWell();
+
+        // --- EnergyRiver Implementation ---
+        let flowRate = 100; // ms between particles
+        let flowInterval = null;
+
+        function initEnergyRiver() {
+            const container = document.getElementById('energy-river');
+            container.innerHTML = '';
+            const svg = createSVG(container, 350, 300);
+
+            // Create path
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const d = "M 0,150 C 100,150 250,50 350,150";
+            path.setAttribute('d', d);
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke', '#818cf8');
+            path.setAttribute('stroke-width', '2');
+            path.setAttribute('opacity', '0.3');
+            svg.appendChild(path);
+
+            startFlow(svg, path);
+        }
+
+        function startFlow(svg, path) {
+            if (flowInterval) clearInterval(flowInterval);
+
+            flowInterval = setInterval(() => {
+                const p = createCircle(svg, 0, 0, 3, '#38bdf8');
+                const pathEl = anime.path(path);
+
+                anime({
+                    targets: p,
+                    translateX: pathEl('x'),
+                    translateY: pathEl('y'),
+                    easing: 'linear',
+                    duration: 2000,
+                    complete: () => p.remove()
+                });
+            }, flowRate);
+        }
+
+        window.setFlow = (rate) => {
+            if (rate === 'low') flowRate = 300;
+            if (rate === 'medium') flowRate = 100;
+            if (rate === 'high') flowRate = 30;
+
+            const path = document.querySelector('#energy-river path');
+            const svg = document.querySelector('#energy-river svg');
+            startFlow(svg, path);
+
+            const buttons = document.querySelectorAll('#energy-river + .controls .btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        };
+
+        // --- Helpers ---
+        function createSVG(container, w, h) {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', '100%');
+            svg.setAttribute('height', '100%');
+            svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+            container.appendChild(svg);
+            return svg;
+        }
+
+        function createCircle(svg, cx, cy, r, fill) {
+            const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', r);
+            c.setAttribute('fill', fill);
+            svg.appendChild(c);
+            return c;
+        }
+
+        // Init
+        initGravityWell();
+        initEnergyRiver();
+
+    </script>
+</body>
+
+</html>
