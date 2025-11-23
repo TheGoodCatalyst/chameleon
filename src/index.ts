@@ -20,6 +20,17 @@ export { HUD } from './client/hud';
 // Components
 export { registerCoreComponents, CardComponent, ChartComponent, FormComponent } from './components';
 
+// Agentic Components
+export {
+    AgenticAnimation,
+    NeuralPulse,
+    ThoughtParticles,
+    DataOrganism,
+    type AgentPhase,
+    type AnimationState,
+    type ThoughtMode,
+} from './agentic';
+
 // Type exports
 export type {
     ComponentDefinition,
